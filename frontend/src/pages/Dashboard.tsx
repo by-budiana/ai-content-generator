@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import api from '../api/api' 
+import { api } from '../lib/api'
 import reactLogo from '../assets/react.svg'
 import viteLogo from '../assets/vite.svg'
 import heroImg from '../assets/hero.png'
@@ -23,12 +23,15 @@ const Dashboard = () => {
 
     setLoading(true)
     try {
-      const response = await api.post('/content/generate', {
-        prompt: prompt,
-        type: 'CAPTION',
-        language: 'ID'
-      })
-      setResult(response.data)
+      const data = await api.post('content/generate', {
+        json: {
+          prompt: prompt,
+          type: 'CAPTION',
+          language: 'ID'
+        }
+      }).json<GeneratedContent>()
+      
+      setResult(data)
     } catch (error) {
       console.error("Error:", error)
       alert("Gagal terhubung ke backend.")

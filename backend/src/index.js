@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const prisma = require('./lib/prisma');
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -27,7 +28,7 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Import Routes (To be created)
+// Import Routes
 const authRoutes = require('./routes/auth.routes');
 const contentRoutes = require('./routes/content.routes');
 const templateRoutes = require('./routes/template.routes');

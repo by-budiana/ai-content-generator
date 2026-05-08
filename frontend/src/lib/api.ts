@@ -1,22 +1,14 @@
 import ky from "ky";
 
-const API_URL = "http://localhost:5000/api";
-
 export const api = ky.create({
-  prefix: API_URL,
+  prefix:
+    "http://ip.atlantic-server.com:60599/api/",
   hooks: {
     beforeRequest: [
       ({ request }) => {
         const token = localStorage.getItem("token");
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`);
-        }
-      },
-    ],
-    afterResponse: [
-      async ({ response }) => {
-        if (response.status === 401) {
-          localStorage.removeItem("token");
         }
       },
     ],
