@@ -1,0 +1,26 @@
+# Dependency - Folder ini sangat berat, jangan di-push
+node_modules/
+
+# Prisma & Database - Jangan push database lokal kamu
+dev.db
+
+# Prisma Client - Ini digenerate otomatis di komputer masing-masing
+/node_modules/.prisma
+
+# Environment Variables - SANGAT PENTING!
+# Berisi API Key Groq dan Password Database kamu.
+.env.local
+.env.example
+
+
+# Logs - File sampah hasil error
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Folder sistem & VS Code
+.vscode/
+.DS_Store
+dist/
+build/

@@ -4,6 +4,7 @@ const contentController = require('../controllers/content.controller');
 const authMiddleware = require('../middleware/auth.middleware');
 
 router.use(authMiddleware);
+console.log('Content routes loaded', contentController);
 
 router.post('/generate', contentController.generateContent);
 router.get('/history', contentController.getHistory);
