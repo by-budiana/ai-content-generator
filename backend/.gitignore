@@ -9,8 +9,7 @@ dev.db
 
 # Environment Variables - SANGAT PENTING!
 # Berisi API Key Groq dan Password Database kamu.
-.env.local
-.env.example
+.env
 
 
 # Logs - File sampah hasil error
