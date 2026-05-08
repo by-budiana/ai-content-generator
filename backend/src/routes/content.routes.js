@@ -10,6 +10,7 @@ router.post('/generate', contentController.generateContent);
 router.get('/history', contentController.getHistory);
 router.patch('/:id/favorite', contentController.toggleFavorite);
 router.post('/:id/rate', contentController.rateContent);
+router.post('/:id/continue', contentController.continueConversation);
 router.delete('/:id', contentController.deleteContent);
 
 module.exports = router;

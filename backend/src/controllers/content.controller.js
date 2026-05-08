@@ -7,6 +7,10 @@ const generateSchema = z.object({
   language: z.enum(["ID", "EN"]),
 });
 
+const continueSchema = z.object({
+  newPrompt: z.string().min(2),
+});
+
 // --- GENERATE CONTENT ---
 exports.generateContent = async (req, res) => {
   try {
@@ -94,9 +98,11 @@ exports.generateContent = async (req, res) => {
 // --- GET HISTORY ---
 exports.getHistory = async (req, res) => {
   try {
-    const currentUserId = req.user?.id || 1;
+    const userId = req.user?.id;
+
     const history = await prisma.content.findMany({
-      where: { userId: currentUserId },
+      where: { userId: userId },
+      include: { ratings: true },
       orderBy: { createdAt: "desc" },
     });
     res.json(history);
@@ -165,6 +171,85 @@ exports.deleteContent = async (req, res) => {
     await prisma.content.delete({ where: { id: parseInt(id) } });
     res.json({ message: "Berhasil dihapus" });
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// --- CONTINUE CONVERSATION (THREAD) ---
+exports.continueConversation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newPrompt } = continueSchema.parse(req.body);
+    const currentUserId = req.user?.id || 1;
+
+    // 1. Cari data Content lama berdasarkan ID dan user
+    const oldContent = await prisma.content.findFirst({
+      where: {
+        id: parseInt(id),
+        userId: currentUserId,
+      },
+    });
+
+    if (!oldContent) {
+      return res.status(404).json({ message: "Percakapan tidak ditemukan" });
+    }
+
+    const groqKey = process.env.GROQ_API_KEY;
+    if (!groqKey) {
+      return res.status(500).json({ message: "API Key Groq tidak ditemukan" });
+    }
+
+    // 2. Gunakan prompt dan result lama sebagai konteks percakapan
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${groqKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: "Anda adalah asisten AI yang melanjutkan percakapan sebelumnya. Berikan respon yang relevan dengan konteks yang sudah ada.",
+            },
+            {
+              role: "user",
+              content: oldContent.inputPrompt,
+            },
+            {
+              role: "assistant",
+              content: oldContent.result,
+            },
+            {
+              role: "user",
+              content: newPrompt,
+            },
+          ],
+          temperature: 0.8,
+        }),
+      },
+    );
+
+    const data = await response.json();
+    const resultText = data.choices?.[0]?.message?.content || "";
+
+    // 3. Update data di database (Append Prompt & Result)
+    const updatedContent = await prisma.content.update({
+      where: { id: parseInt(id) },
+      data: {
+        inputPrompt: `${oldContent.inputPrompt}\n\n---\n\nUser: ${newPrompt}`,
+        result: `${oldContent.result}\n\n---\n\nAI: ${resultText.trim()}`,
+      },
+    });
+
+    res.json(updatedContent);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ errors: error.errors });
+    }
     res.status(500).json({ message: error.message });
   }
 };
