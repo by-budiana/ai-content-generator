@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 });
 
 // Health check and DB check
-app.get('/api/health', async (req, res) => {
+app.get('/health', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ status: 'OK', database: 'Connected' });
