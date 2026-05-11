@@ -33,26 +33,39 @@ function Register() {
   };
 
   const handleRegister = async (
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
+  e: React.FormEvent
+) => {
+  e.preventDefault();
 
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
 
+    setError("");
+
+    const response =
       await registerUser(form);
 
-      navigate("/");
-    } catch (err: any) {
+    console.log(response);
+
+    navigate("/");
+  } catch (err: any) {
+    console.log(err);
+
+    try {
+      const errorData =
+        await err.response.json();
+
       setError(
-        err?.response?.data?.message ||
+        errorData.message ||
           "Register failed"
       );
-    } finally {
-      setLoading(false);
+    } catch {
+      setError("Network error");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#070B14] text-white flex items-center justify-center px-6">
