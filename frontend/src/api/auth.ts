@@ -21,12 +21,11 @@ export const loginUser = async (
     .json();
 };
 
-export const registerUser = async (
-  data: RegisterData
-) => {
-  return await api
-    .post("auth/register", {
-      json: data,
-    })
-    .json();
-};
+export const registerUser =
+  async (data: RegisterData) => {
+    return await api
+      .post("auth/register", {
+        json: data,
+      })
+      .json();
+  };
