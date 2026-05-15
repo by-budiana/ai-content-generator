@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const path = require("path");
 
 const prisma = require("./lib/prisma");
 
@@ -16,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
@@ -24,6 +25,9 @@ app.use(
 app.use(express.json());
 
 app.use(morgan("dev"));
+
+// Static files
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // ======================
 // ROOT
@@ -72,6 +76,8 @@ const templateRoutes = require("./routes/template.routes");
 
 const dashboardRoutes = require("./routes/dashboard.routes");
 
+const userRoutes = require("./routes/user.routes");
+
 app.use("/api/auth", authRoutes);
 
 app.use(
@@ -88,6 +94,8 @@ app.use(
   "/api/dashboard",
   dashboardRoutes
 );
+
+app.use("/api/user", userRoutes);
 
 // ======================
 // ERROR HANDLER

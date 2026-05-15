@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword },
       // Hanya ambil field yang diperlukan untuk response
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, avatar: true },
     });
 
     console.log(`[AUTH] New user registered: ${email}`);
@@ -84,7 +84,12 @@ exports.login = async (req, res) => {
 
     res.json({
       token,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -106,7 +111,13 @@ exports.getMe = async (req, res) => {
     // Pastikan req.user didapat dari middleware verifyToken
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: { id: true, name: true, email: true, createdAt: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+        createdAt: true,
+      },
     });
 
     if (!user) {

@@ -16,6 +16,7 @@ export interface ContentResponse {
   userId: number;
   inputPrompt: string;
   result: string;
+  messages: { role: "user" | "assistant"; content: string }[];
   type: string;
   language: string;
   createdAt: string;
@@ -44,7 +45,9 @@ export const getHistory =
 export const continueConversation =
   async (
     id: number,
-    newPrompt: string
+    newPrompt: string,
+    type?: string,
+    language?: string
   ): Promise<ContentResponse> => {
     return await api
       .post(
@@ -52,6 +55,8 @@ export const continueConversation =
         {
           json: {
             newPrompt,
+            type,
+            language,
           },
         }
       )

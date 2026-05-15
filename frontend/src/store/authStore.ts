@@ -4,6 +4,8 @@ interface User {
   id: number;
   name: string;
   email: string;
+  avatar?: string | null;
+  bio?: string | null;
 }
 
 interface AuthState {
@@ -14,6 +16,8 @@ interface AuthState {
     user: User,
     token: string
   ) => void;
+
+  setUser: (user: User) => void;
 
   logout: () => void;
 }
@@ -35,6 +39,10 @@ export const useAuthStore =
         user,
         token,
       });
+    },
+
+    setUser: (user) => {
+      set({ user });
     },
 
     logout: () => {

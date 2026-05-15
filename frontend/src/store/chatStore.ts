@@ -7,6 +7,8 @@ interface Content {
 
   result: string;
 
+  messages: { role: "user" | "assistant"; content: string }[];
+
   type: string;
 
   language: string;
