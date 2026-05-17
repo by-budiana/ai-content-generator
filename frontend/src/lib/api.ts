@@ -2,7 +2,7 @@ import ky from "ky";
 
 const api = ky.create({
   prefixUrl:
-    "http://localhost:5000/api",
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 
   credentials: "include",
 
